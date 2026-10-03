@@ -1,0 +1,12 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]: 📚 LMS Portal
+        - paragraph [ref=e6]: Sign in to continue to your library workspace.
+      - generic [ref=e7]:
+        - textbox "Email" [ref=e8]
+        - textbox "Password" [ref=e9]
+        - button "Sign in" [ref=e10] [cursor=pointer]
+      - button "New member? Register" [ref=e11] [cursor=pointer]
+  - alert [ref=e12]

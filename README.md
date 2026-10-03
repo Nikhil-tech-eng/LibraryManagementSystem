@@ -30,6 +30,19 @@ The Cloud Native Library Management System (LMS) is a full-stack application bui
 - 🧪 Chaos Mesh experiments for pod failure, network latency, and CPU stress
 - 📬 MailHog for local inspection of transactional emails
 
+## 🖼️ Project screenshots
+
+These screenshots were captured from the project running locally with Docker Compose.
+
+<p align="center">
+  <img src="docs/images/portal-login.png" alt="LMS Portal sign-in screen" width="49%" />
+  <img src="docs/images/book-catalog-swagger.png" alt="Book Catalog Service Swagger API" width="49%" />
+</p>
+
+<p align="center">
+  <img src="docs/images/mailhog.png" alt="MailHog local notification inbox" width="49%" />
+</p>
+
 ## 🏗️ Architecture
 
 ```mermaid
