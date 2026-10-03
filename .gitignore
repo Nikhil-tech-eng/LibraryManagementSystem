@@ -10,6 +10,9 @@ CLAUDE.md
 tasklist.md
 /package-lock.json
 
+# Playwright
+.playwright-cli/
+
 # Python caches, virtual environments, and packaging output
 __pycache__/
 *.py[cod]
