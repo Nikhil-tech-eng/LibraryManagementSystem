@@ -8,7 +8,7 @@
 AGENTS.md
 CLAUDE.md
 tasklist.md
-package-lock.json
+/package-lock.json
 
 # Python caches, virtual environments, and packaging output
 __pycache__/
