@@ -97,6 +97,4 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  
+          cache-to: type=gha,mode=max,ignore-error=true
