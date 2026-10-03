@@ -1,0 +1,57 @@
+namespaceOverride: monitoring
+
+prometheus:
+  prometheusSpec:
+    # Scrape all pods with prometheus.io/scrape: "true" annotations
+    podMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    additionalScrapeConfigs:
+      - job_name: lms-book-catalog
+        metrics_path: /metrics
+        static_configs:
+          - targets: ["book-catalog-svc.default.svc.cluster.local:5001"]
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: service
+            replacement: book-catalog
+
+      - job_name: lms-user-service
+        metrics_path: /metrics
+        static_configs:
+          - targets: ["user-svc.default.svc.cluster.local:5002"]
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: service
+            replacement: user-service
+
+      - job_name: lms-borrowing-service
+        metrics_path: /metrics
+        static_configs:
+          - targets: ["borrowing-svc.default.svc.cluster.local:5003"]
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: service
+            replacement: borrowing-service
+
+      - job_name: lms-notification-service
+        metrics_path: /metrics
+        static_configs:
+          - targets: ["notification-svc.default.svc.cluster.local:5004"]
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: service
+            replacement: notification-service
+
+grafana:
+  adminPassword: lms-admin
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: lms
+          orgId: 1
+          folder: LMS
+          type: file
+          disableDeletion: false
+          options:
+            path: /var/lib/grafana/dashboards/lms

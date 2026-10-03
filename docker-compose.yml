@@ -1,0 +1,179 @@
+networks:
+  lms-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+
+x-python-service: &python-defaults
+  restart: unless-stopped
+  networks:
+    - lms-network
+  env_file:
+    - .env
+
+services:
+  # ─────────────────────────── Infrastructure ───────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: lms-postgres
+    restart: unless-stopped
+    networks:
+      - lms-network
+    environment:
+      POSTGRES_DB: ${DB_NAME:-lms_db}
+      POSTGRES_USER: ${DB_USER:-lms_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-lms_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-lms_user} -d ${DB_NAME:-lms_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: lms-redis
+    restart: unless-stopped
+    networks:
+      - lms-network
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: lms-mailhog
+    restart: unless-stopped
+    networks:
+      - lms-network
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+
+  # ─────────────────────────── Microservices ────────────────────────────────
+  book-catalog:
+    <<: *python-defaults
+    build:
+      context: ./book-catalog
+      dockerfile: Dockerfile
+    container_name: lms-book-catalog
+    ports:
+      - "5001:5001"
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5001/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  user-service:
+    <<: *python-defaults
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: lms-user-service
+    ports:
+      - "5002:5002"
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5002/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  borrowing-service:
+    <<: *python-defaults
+    build:
+      context: ./borrowing-service
+      dockerfile: Dockerfile
+    container_name: lms-borrowing-service
+    ports:
+      - "5003:5003"
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+      USER_SERVICE_URL: http://user-service:5002
+      BOOK_CATALOG_URL: http://book-catalog:5001
+      NOTIFICATION_SERVICE_URL: http://notification-service:5004
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      book-catalog:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5003/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  notification-service:
+    <<: *python-defaults
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: lms-notification-service
+    ports:
+      - "5004:5004"
+    environment:
+      DB_HOST: postgres
+      SMTP_HOST: mailhog
+      SMTP_PORT: "1025"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5004/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lms-frontend
+    restart: unless-stopped
+    networks:
+      - lms-network
+    ports:
+      - "3000:3000"
+    environment:
+      BOOK_CATALOG_URL: http://book-catalog:5001
+      USER_SERVICE_URL: http://user-service:5002
+      BORROWING_SERVICE_URL: http://borrowing-service:5003
+      NOTIFICATION_SERVICE_URL: http://notification-service:5004
+    depends_on:
+      - book-catalog
+      - user-service
+      - borrowing-service
+      - notification-service

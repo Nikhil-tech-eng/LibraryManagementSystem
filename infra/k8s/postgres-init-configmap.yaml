@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-sql
+  namespace: default
+  labels:
+    app.kubernetes.io/part-of: lms
+data:
+  init.sql: |
+    -- Sourced from infra/db/init.sql
+    -- This ConfigMap is mounted into the PostgreSQL init container.
+    -- Keep in sync with infra/db/init.sql.
+    \c lms_db
+
+    CREATE TABLE IF NOT EXISTS members (
+        id               SERIAL PRIMARY KEY,
+        name             VARCHAR(200) NOT NULL,
+        email            VARCHAR(200) UNIQUE NOT NULL,
+        password_hash    TEXT NOT NULL,
+        role             VARCHAR(20)  NOT NULL DEFAULT 'member',
+        membership_start DATE DEFAULT CURRENT_DATE,
+        membership_end   DATE DEFAULT (CURRENT_DATE + INTERVAL '1 year')
+    );
+
+    CREATE TABLE IF NOT EXISTS books (
+        id               SERIAL PRIMARY KEY,
+        title            VARCHAR(300) NOT NULL,
+        author           VARCHAR(200) NOT NULL,
+        isbn             VARCHAR(20)  UNIQUE,
+        genre            VARCHAR(100),
+        total_copies     INT NOT NULL DEFAULT 1,
+        available_copies INT NOT NULL DEFAULT 1,
+        published_year   INT,
+        created_at       TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS borrow_records (
+        id              SERIAL PRIMARY KEY,
+        member_id       INT  NOT NULL REFERENCES members(id),
+        book_id         INT  NOT NULL REFERENCES books(id),
+        checkout_date   DATE DEFAULT CURRENT_DATE,
+        due_date        DATE NOT NULL,
+        return_date     DATE,
+        status          VARCHAR(20) NOT NULL DEFAULT 'borrowed',
+        fine_amount     NUMERIC(10,2) DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS notifications_log (
+        id                SERIAL PRIMARY KEY,
+        member_id         INT  REFERENCES members(id),
+        notification_type VARCHAR(50),
+        message           TEXT,
+        sent_at           TIMESTAMPTZ DEFAULT NOW(),
+        status            VARCHAR(20) DEFAULT 'sent'
+    );

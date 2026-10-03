@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: book-catalog-pod-failure
+  namespace: chaos-testing
+  labels:
+    app.kubernetes.io/part-of: lms
+spec:
+  action: pod-failure
+  mode: one               # kill one random pod at a time
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      "app": "book-catalog"
+  duration: "5m"
+  scheduler:
+    cron: "@every 60s"    # re-inject every 60 seconds

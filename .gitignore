@@ -1,0 +1,71 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# Agent instructions, task tracking, and local run notes
+AGENTS.md
+CLAUDE.md
+tasklist.md
+package-lock.json
+
+# Python caches, virtual environments, and packaging output
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+
+# Node.js, Next.js, and frontend build output
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local databases, caches, and generated runtime data
+*.sqlite
+*.sqlite3
+*.db
+*.log
+redis-data/
+postgres-data/
+
+# Docker and local development overrides
+docker-compose.override.yml
+
+# Kubernetes/local tooling output
+.kube/
+.minikube/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.code-workspace
+*.swp
+*.swo
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+desktop.ini
+

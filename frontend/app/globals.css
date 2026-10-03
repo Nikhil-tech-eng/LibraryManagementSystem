@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: oklch(0.9911 0 0);
+    --foreground: oklch(0.2046 0 0);
+    --card: oklch(0.9911 0 0);
+    --card-foreground: oklch(0.2046 0 0);
+    --popover: oklch(0.9911 0 0);
+    --popover-foreground: oklch(0.4386 0 0);
+    --primary: oklch(0.5568 0.1355 155.8120);
+    --primary-foreground: oklch(1 0 0);
+    --secondary: oklch(0.9940 0 0);
+    --secondary-foreground: oklch(0.2046 0 0);
+    --muted: oklch(0.9461 0 0);
+    --muted-foreground: oklch(0.2435 0 0);
+    --accent: oklch(0.9461 0 0);
+    --accent-foreground: oklch(0.2435 0 0);
+    --destructive: oklch(0.5523 0.1927 32.7272);
+    --destructive-foreground: oklch(0.9934 0.0032 17.2118);
+    --border: oklch(0.9037 0 0);
+    --input: oklch(0.9731 0 0);
+    --ring: oklch(0.5568 0.1355 155.8120);
+    --radius: 0.5rem;
+    --bg-primary: var(--background);
+    --bg-glass: var(--card);
+    --border-glass: var(--border);
+    --text-primary: var(--foreground);
+    --text-secondary: var(--muted-foreground);
+    --accent-blue: var(--primary);
+    --accent-purple: var(--primary);
+    --accent-green: var(--primary);
+    --accent-red: var(--destructive);
+    --accent-yellow: var(--accent);
+  }
+  * { @apply border-border; }
+  html, body {
+    @apply min-h-screen;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+  body { font-family: Arial, Helvetica, sans-serif; }
+  input, select, textarea { @apply border-input bg-background text-foreground; }
+  table { @apply w-full border-collapse; }
+  th { @apply border-b border-border px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground; }
+  td { @apply border-b border-border px-4 py-3 text-sm; }
+  tr:last-child td { @apply border-b-0; }
+  tr:hover td { @apply bg-muted; }
+}
+
+.dark {
+  --background: oklch(0.1822 0 0);
+  --foreground: oklch(0.9288 0.0126 255.5078);
+  --card: oklch(0.2046 0 0);
+  --card-foreground: oklch(0.9288 0.0126 255.5078);
+  --popover: oklch(0.2603 0 0);
+  --popover-foreground: oklch(0.7348 0 0);
+  --primary: oklch(0.5568 0.1355 155.8120);
+  --primary-foreground: oklch(0.9213 0.0135 167.1556);
+  --secondary: oklch(0.2603 0 0);
+  --secondary-foreground: oklch(0.9851 0 0);
+  --muted: oklch(0.2393 0 0);
+  --muted-foreground: oklch(0.7122 0 0);
+  --accent: oklch(0.3132 0 0);
+  --accent-foreground: oklch(0.9851 0 0);
+  --destructive: oklch(0.3123 0.0852 29.7877);
+  --destructive-foreground: oklch(0.9368 0.0045 34.3092);
+  --border: oklch(0.2809 0 0);
+  --input: oklch(0.2603 0 0);
+  --ring: oklch(0.5568 0.1355 155.8120);
+}
+
+@layer components {
+  .glass-card { @apply rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm; }
+  .btn { @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50; }
+  .btn-primary { @apply bg-primary text-primary-foreground hover:bg-primary; }
+  .btn-success { @apply bg-primary text-primary-foreground hover:bg-primary; }
+  .btn-danger { @apply bg-destructive text-destructive-foreground hover:bg-destructive; }
+  .btn-ghost { @apply border border-border bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground; }
+  .badge { @apply inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold uppercase; }
+  .badge-green, .badge-blue, .badge-purple { @apply bg-primary text-primary-foreground; }
+  .badge-red { @apply bg-destructive text-destructive-foreground; }
+  .badge-yellow { @apply bg-accent text-accent-foreground; }
+}

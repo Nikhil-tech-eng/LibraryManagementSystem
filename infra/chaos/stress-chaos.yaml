@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: book-catalog-cpu-stress
+  namespace: chaos-testing
+  labels:
+    app.kubernetes.io/part-of: lms
+spec:
+  mode: all
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      "app": "book-catalog"
+  stressors:
+    cpu:
+      workers: 2         # 2 CPU-spinning goroutines per pod
+      load: 90           # target 90% CPU — above HPA 70% threshold
+  duration: "3m"

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-config
+  namespace: default
+  labels:
+    app.kubernetes.io/part-of: lms
+data:
+  DB_HOST: "postgres-svc"
+  DB_PORT: "5432"
+  DB_NAME: "lms_db"
+  DB_USER: "lms_user"
+  REDIS_HOST: "redis-svc"
+  REDIS_PORT: "6379"
+  SMTP_HOST: "mailhog-svc"
+  SMTP_PORT: "1025"
+  SMTP_FROM: "noreply@library.org"
+  SMTP_USE_TLS: "false"
+  USER_SERVICE_URL: "http://user-svc:5002"
+  BOOK_CATALOG_URL: "http://book-catalog-svc:5001"
+  BORROWING_SERVICE_URL: "http://borrowing-svc:5003"
+  NOTIFICATION_SERVICE_URL: "http://notification-svc:5004"
+  ACCESS_TOKEN_EXPIRE_MINUTES: "1440"
