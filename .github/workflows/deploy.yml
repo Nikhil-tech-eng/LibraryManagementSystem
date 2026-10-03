@@ -99,40 +99,4 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # ─────────────────────────── K8s Deploy (Minikube) ───────────────────────
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build-and-push
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v3
-
-      - name: Configure kubeconfig
-        run: echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yaml
-
-      - name: Apply K8s manifests
-        env:
-          KUBECONFIG: kubeconfig.yaml
-        run: |
-          kubectl apply -f infra/k8s/configmap.yaml
-          kubectl apply -f infra/k8s/secrets.yaml
-          kubectl apply -f infra/k8s/postgres-init-configmap.yaml
-          kubectl apply -f infra/k8s/postgres-statefulset.yaml
-          kubectl apply -f infra/k8s/postgres-service.yaml
-          kubectl apply -f infra/k8s/redis-deployment.yaml
-          kubectl apply -f infra/k8s/book-catalog-deployment.yaml
-          kubectl apply -f infra/k8s/user-service-deployment.yaml
-          kubectl apply -f infra/k8s/borrowing-service-deployment.yaml
-          kubectl apply -f infra/k8s/notification-service-deployment.yaml
-          kubectl apply -f infra/k8s/frontend-deployment.yaml
-          kubectl apply -f infra/k8s/ingress.yaml
-          kubectl apply -f infra/k8s/book-catalog-hpa.yaml
-          kubectl apply -f infra/k8s/borrowing-service-hpa.yaml
-          kubectl rollout status deployment/book-catalog
-          kubectl rollout status deployment/user-service
-          kubectl rollout status deployment/borrowing-service
-          kubectl rollout status deployment/notification-service
-          kubectl rollout status deployment/frontend
+  
